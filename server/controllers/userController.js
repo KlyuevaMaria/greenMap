@@ -11,11 +11,16 @@ const generateJwt = (id, email, role) => {
 
 class UserController {
   async signup(req, res, next) {
-    await body("surname").isString().isLength({ min: 3 }).run(req),
-      await body("name").isString().isLength({ min: 3 }).run(req),
-      await body("email").isEmail().normalizeEmail().run(req),
-      await body("password").isString().isLength({ min: 6 }).run(req);
-
+    // await body("surname").isString().isLength({ min: 3 }).run(req),
+    //   await body("name").isString().isLength({ min: 3 }).run(req),
+    //   await body("email").isEmail().normalizeEmail().run(req),
+    //   await body("password").isString().isLength({ min: 6 }).run(req);
+    await Promise.all([
+      body("surname").isString().isLength({ min: 3 }).run(req),
+      body("name").isString().isLength({ min: 3 }).run(req),
+      body("email").isEmail().normalizeEmail().run(req),
+      body("password").isString().isLength({ min: 6 }).run(req),
+    ]);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -59,7 +64,7 @@ class UserController {
       if (!user) {
         return res.status(404).json({ message: "Пользователь не найден" });
       }
-      const isMatch = bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: "Неверный пароль" });
       }
