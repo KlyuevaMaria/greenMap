@@ -9,4 +9,30 @@ const User = sequelize.define("user", {
   role: { type: DataTypes.STRING, allowNull: false, defaultValue: "USER" },
 });
 
-module.exports = { User };
+const Notification = sequelize.define('notification', {
+    id: {
+        type: DataTypes.INTEGER, 
+        primaryKey: true, 
+        autoIncrement: true },
+    title: { 
+        type: DataTypes.STRING, 
+        allowNull: false },
+    description: {
+        type: DataTypes.TEXT, 
+        allowNull: false },
+    img: {
+        type: DataTypes.STRING,
+        allowNull: true}
+});
+
+
+User.hasMany(Notification);
+Notification.belongsTo(User);
+
+module.exports = {
+  User,
+  Notification,
+}
+
+
+// module.exports = { User }; 
