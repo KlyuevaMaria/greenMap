@@ -6,7 +6,6 @@ import About from "../pages/About";
 import AdminPanel from "../pages/AdminPanel";
 import Reg from "../pages/reg";
 import Signup from "../pages/Signup";
-import MemoizedMap from '../pages/Map';
 
 const AppRoutes = () => {
   return (

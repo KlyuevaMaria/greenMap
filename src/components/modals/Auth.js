@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Button, Card, Container, Form, Row } from "react-bootstrap";
+import { Button, Form, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../../store/authSlice";
 
 function Auth(props) {
   const [validated, setValidated] = useState(false);
-
-  const click = async (event) => {
-    setValidated(true);
-  };
+  const dispatch = useDispatch();
+  const { error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     surname: "",
@@ -17,8 +15,6 @@ function Auth(props) {
     email: "",
     password: "",
   });
-  const dispatch = useDispatch();
-  const { error } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,7 +22,13 @@ function Auth(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(signup(formData));
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    } else {
+      dispatch(signup(formData));
+    }
+    setValidated(true);
   };
 
   return (
@@ -42,18 +44,14 @@ function Auth(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form
-          className="d-flex flex-column"
-          noValidate
-          validated={validated}
-          onSubmit={handleSubmit}
-        >
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <Form.Group md="4" controlId="validationCustom01">
             <Form.Control
               required
               className="mt-3"
               placeholder="Ваше имя"
-              //   value={username}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
             />
           </Form.Group>
@@ -62,7 +60,8 @@ function Auth(props) {
               required
               className="mt-3"
               placeholder="Ваша фамилия"
-              //   value={surname}
+              name="surname"
+              value={formData.surname}
               onChange={handleChange}
             />
           </Form.Group>
@@ -70,28 +69,29 @@ function Auth(props) {
             <Form.Control
               required
               className="mt-3"
+              type="email"
               placeholder="Ваш адрес электронной почты"
-              //   value={email}
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-            />{" "}
+            />
           </Form.Group>
           <Form.Group md="4" controlId="validationCustom04">
             <Form.Control
               required
               className="mt-3"
-              placeholder="Придумайте пароль"
-              //   value={password}
-              onChange={handleChange}
               type="password"
-            />{" "}
+              placeholder="Придумайте пароль"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
           </Form.Group>
 
-          <Row className="d-flex justify-content-between mt-3 pl-3 pr-3">
+          <Row className="d-flex justify-content-between mt-3">
             <Button className="mt-3" variant="light" type="submit">
               Отправить
             </Button>
-            <button type="submit">Зарегистрироваться</button>
-
           </Row>
         </Form>
         {error && <p style={{ color: "red" }}>{error}</p>}
